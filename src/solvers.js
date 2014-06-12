@@ -14,49 +14,24 @@
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
 window.findNRooksSolution = function(n) {
-  var solution = []; //fixme
-  var top = n;
-  ///PSEUDOCODIN'!!!!!
-  // Find an available spot for rook #1
+  var solution;
   var board = new Board({n:n});
-  var emptyBoard = board.rows();
-  var checkSolutions = function(n,boardLayout,conflictedRow,conflictedCol){
-    if (n===2){
-      debugger;
+  var col = 0;
+  var row = 0;
+  board.togglePiece(row,col);
+  row++;
+  while (row < n){
+    board.togglePiece(row,col);
+    while(board.hasColConflictAt(col)){
+      board.togglePiece(row,col);
+      col++;
+      board.togglePiece(row,col);
     }
-    var conflictedRow = conflictedRow || {};
-    var conflictedCol = conflictedCol || {};
+    row++;
+  }
 
-    for (var i = 0; i < top; i ++){
-      if(!conflictedRow[i]){
+  solution = board.rows();
 
-      // find first available column
-        for (var j=0; j < top; j++) {
-          var tempBoardLayout = boardLayout.slice();
-          if (!conflictedCol[j]){
-            conflictedRow[i]=true;
-            conflictedCol[j]=true;
-            tempBoardLayout[i][j] = 1;
-            if (n!== 1){
-              checkSolutions(n-1, tempBoardLayout,conflictedRow,conflictedCol);
-              delete conflictedRow[i];
-              delete conflictedCol[j];
-
-              solution.push(tempBoardLayout);
-            }
-          }
-        }
-      }
-    }
-  };
-  checkSolutions(n,emptyBoard);
-
-  // Save the rook's row and column as forbidden
-    // Find available spot for rook #2 that is not forbidden
-    // Repeat until we're out of rooks
-    //
-    // LOOKS LIKE RECURSION!!!
-    //
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
   return solution;
 };
@@ -65,10 +40,36 @@ window.findNRooksSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var tally = 0;
+  var init = n;
 
-  console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
-  return solutionCount;
+  var solutionCount = function(n, currentBoard) {
+    var row = init-n;
+    var col = 0;
+    var boardCopy = new Board(currentBoard.rows());
+
+    for (var i=0; i<init; i++) {
+      if (n===1) {
+        boardCopy.togglePiece(row, col);
+        if (!boardCopy.hasAnyColConflicts()) {
+          tally++;
+        }
+        boardCopy.togglePiece(row, col);
+      } else {
+        boardCopy.togglePiece(row, col);
+        if (!boardCopy.hasAnyColConflicts()) {
+          solutionCount(n-1, boardCopy);
+        }
+        boardCopy.togglePiece(row, col);
+      }
+      col++;
+    }
+  };
+
+  solutionCount(n, new Board({n:n}));
+
+  console.log('Number of solutions for ' + n + ' rooks:', tally);
+  return tally;
 };
 
 

@@ -182,7 +182,7 @@
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
       var n = this.get('n');
-      for (var i = 2-n; i < n-2; i++){
+      for (var i = 2-n; i <= n-2; i++){
         if (this.hasMajorDiagonalConflictAt(i)){
           return true;
         }

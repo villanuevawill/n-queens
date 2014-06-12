@@ -36,7 +36,35 @@ window.findNRooksSolution = function(n) {
   return solution;
 };
 
+window.countNRooksSolutions2 = function(n, currentBoard, tally, init) {
+  currentBoard = currentBoard || new Board({n:n});
+  tally = n || 0;
+  if (init == null){
+    init = n;
+  }
+  var row = init-n;
+  var col = 0;
+  var boardCopy = new Board(currentBoard.rows());
 
+  for (var i=0; i<init; i++) {
+    if (n===1) {
+      boardCopy.togglePiece(row, col);
+      if (!boardCopy.hasAnyColConflicts()) {
+        return 1;
+      }
+      boardCopy.togglePiece(row, col);
+    } else {
+      boardCopy.togglePiece(row, col);
+      if (!boardCopy.hasAnyColConflicts()) {
+        tally += countNRooksSolutions(n-1, boardCopy, tally, init);
+      }
+      boardCopy.togglePiece(row, col);
+    }
+    col++;
+  }
+  console.log('Number of solutions for ' + n + ' rooks:', tally);
+  return tally;
+};
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
 window.countNRooksSolutions = function(n) {
@@ -85,8 +113,40 @@ window.findNQueensSolution = function(n) {
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
-  var solutionCount = undefined; //fixme
+  var tally = 0;
+  var init = n;
 
-  console.log('Number of solutions for ' + n + ' queens:', solutionCount);
-  return solutionCount;
+  var solutionCount = function(n, currentBoard) {
+    var row = init-n;
+    var col = 0;
+    var boardCopy = new Board(currentBoard.rows());
+    if (n===0){
+      tally++;
+    }
+    for (var i=0; i<init; i++) {
+      if (n===1) {
+        boardCopy.togglePiece(row, col);
+        if (!boardCopy.hasAnyColConflicts() &&
+            !boardCopy.hasAnyMajorDiagonalConflicts() &&
+            !boardCopy.hasAnyMinorDiagonalConflicts()) {
+          tally++;
+        }
+        boardCopy.togglePiece(row, col);
+      } else {
+        boardCopy.togglePiece(row, col);
+        if (!boardCopy.hasAnyColConflicts() &&
+            !boardCopy.hasAnyMajorDiagonalConflicts() &&
+            !boardCopy.hasAnyMinorDiagonalConflicts()){
+          solutionCount(n-1, boardCopy);
+        }
+        boardCopy.togglePiece(row, col);
+      }
+      col++;
+    }
+  };
+
+  solutionCount(n, new Board({n:n}));
+
+  console.log('Number of solutions for ' + n + ' queens:', tally);
+  return tally;
 };

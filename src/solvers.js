@@ -152,37 +152,41 @@ window.findNQueensSolution = function(n) {
 window.countNQueensSolutions = function(n) {
   var tally = 0;
   var init = n;
+  var colCollision = {};
+  var majorCollision = {};
+  var minorCollision = {};
 
-  var solutionCount = function(n, currentBoard) {
+  var solutionCount = function(n) {
     var row = init-n;
     var col = 0;
-    var boardCopy = new Board(currentBoard.rows());
     if (n===0){
       tally++;
     }
     for (var i=0; i<init; i++) {
       if (n===1) {
-        boardCopy.togglePiece(row, col);
-        if (!boardCopy.hasAnyColConflicts() &&
-            !boardCopy.hasAnyMajorDiagonalConflicts() &&
-            !boardCopy.hasAnyMinorDiagonalConflicts()) {
+        if (!colCollision[col] &&
+            !majorCollision[col-row] &&
+            !minorCollision[row+col]) {
           tally++;
         }
-        boardCopy.togglePiece(row, col);
       } else {
-        boardCopy.togglePiece(row, col);
-        if (!boardCopy.hasAnyColConflicts() &&
-            !boardCopy.hasAnyMajorDiagonalConflicts() &&
-            !boardCopy.hasAnyMinorDiagonalConflicts()){
-          solutionCount(n-1, boardCopy);
+        if (!colCollision[col] &&
+            !majorCollision[col-row] &&
+            !minorCollision[row+col]){
+          majorCollision[col-row] = true;
+          minorCollision[row+col] = true;
+          colCollision[col] = true;
+          solutionCount(n-1);
+          majorCollision[col-row] = false;
+          minorCollision[row+col] = false;
+          colCollision[col] = false;
         }
-        boardCopy.togglePiece(row, col);
       }
       col++;
     }
   };
 
-  solutionCount(n, new Board({n:n}));
+  solutionCount(n);
 
   console.log('Number of solutions for ' + n + ' queens:', tally);
   return tally;

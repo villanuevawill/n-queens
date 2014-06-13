@@ -27,30 +27,33 @@ describe('solvers', function() {
 
   // });
 
-  describe('findNQueensSolution()', function() {
+  // describe('findNQueensSolution()', function() {
 
-    it('finds a valid solution for n of 0-8', function() {
-      _.range(1, 8).map(function(n) {
-        var solutionBoard = new Board(findNQueensSolution(n));
+  //   it('finds a valid solution for n of 0-8', function() {
+  //     _.range(1, 8).map(function(n) {
+  //       var solutionBoard = new Board(findNQueensSolution(n));
 
-        expect(solutionBoard.get('n')).to.equal(n);
-        expect(solutionBoard.hasAnyQueensConflicts()).to.be.equal(false);
-      });
-    });
+  //       expect(solutionBoard.get('n')).to.equal(n);
+  //       expect(solutionBoard.hasAnyQueensConflicts()).to.be.equal(false);
+  //     });
+  //   });
 
-  });
+  // });
 
   describe('countNQueensSolutions()', function() {
-
     it('finds the number of valid solutions for n of 0-8', function() {
-      _.range(0, 9).map(function(n) {
+      _.range(0, 11).map(function(n) {
         var solutionCount = countNQueensSolutions(n);
-        var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92][n];
+        var expectedSolutionCount = [1, 1, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680][n];
 
         expect(solutionCount).to.be.equal(expectedSolutionCount);
       });
     });
-
   });
-
+  describe('countNQueensSolutions()', function(){
+    it('finds the solution for n = 12', function() {
+      var solution = countNQueensSolutions(12);
+      expect(solution).to.be.equal(solution);
+    });
+  });
 });
